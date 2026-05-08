@@ -1,0 +1,20 @@
+# Big data files — kept on Drive (highfrontier:calm-wind-usa/), not Git
+data/era5/
+data/dem/
+data/gwa/
+data/calm/
+
+# Derived render outputs (200k+ tiles)
+deploy_real_us/tiles/
+
+# OS / Python crud
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+
+# Intermediate temp files
+deploy_real_us/data/_*.json
+.netlify/
+files.zip
+files/

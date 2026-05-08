@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spaceport Calm-Wind Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0b1220;color:#e6e9f2}
+#map{position:absolute;top:0;bottom:0;left:0;right:300px;background:#0b1220}
+#panel{position:absolute;top:0;right:0;width:300px;bottom:0;background:#11192c;
+  border-left:1px solid #233056;padding:16px 16px 30px;overflow-y:auto;font-size:12px;line-height:1.45}
+#panel h1{font-size:15px;font-weight:600;margin-bottom:2px}
+#panel .sub{font-size:11px;color:#90a0c8;margin-bottom:12px}
+.ctrl{margin:10px 0}
+.ctrl label{display:block;font-size:10px;font-weight:600;color:#90a0c8;
+  text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.ctrl input[type=range]{width:100%}
+.ctrl .val{text-align:center;font-size:13px;font-weight:600;margin-top:1px;color:#cfd8ee}
+.legend{background:#152043;border:1px solid #2a3a6e;border-radius:6px;padding:8px;margin-top:10px}
+.legend-bar{height:12px;border-radius:3px;
+  background:linear-gradient(to right,
+    rgb(180,0,180),rgb(255,0,0),rgb(255,165,0),rgb(255,255,0),
+    rgb(0,200,0),rgb(0,0,180),rgb(0,255,255),rgb(255,255,255))}
+.legend-labels{display:flex;justify-content:space-between;font-size:9px;color:#90a0c8;margin-top:3px}
+.opacity-row{display:flex;align-items:center;gap:5px;margin-top:3px}
+.opacity-row input{flex:1}
+.opacity-row span{font-size:10px;color:#90a0c8;width:30px;text-align:right}
+.back{display:block;margin:14px 0;text-align:center;background:#243152;color:#cfd8ee;
+  padding:7px;border-radius:5px;text-decoration:none;font-size:11px}
+.back:hover{background:#2f3e6c}
+#siteinfo{margin-bottom:8px;padding:9px;background:#152043;border-radius:6px;border:1px solid #2a3a6e}
+#siteinfo h2{font-size:13px;font-weight:600}
+#siteinfo .meta{font-size:10.5px;color:#9fb1de;margin-top:2px}
+.note{font-size:10px;color:#7a8bbb;margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<aside id="panel">
+  <a class="back" href="index.html">← All US spaceports</a>
+  <div id="siteinfo"><h2 id="t-name">Loading…</h2><div class="meta" id="t-meta"></div></div>
+
+  <h1 id="t-title">Calm-Wind Map</h1>
+  <div class="sub">% of days with calm window of H consecutive hours below threshold T at 100&nbsp;m AGL.</div>
+
+  <div class="ctrl">
+    <label>Time period</label>
+    <input type="range" id="month" min="0" max="12" value="0" step="1" oninput="updateLayer()">
+    <div class="val" id="month-val">Annual</div>
+  </div>
+  <div class="ctrl">
+    <label>Wind threshold</label>
+    <input type="range" id="threshold" min="0" max="4" value="2" step="1" oninput="updateLayer()">
+    <div class="val" id="thresh-val">2.0 m/s</div>
+  </div>
+  <div class="ctrl">
+    <label>Consecutive hours</label>
+    <input type="range" id="hours" min="1" max="3" value="2" step="1" oninput="updateLayer()">
+    <div class="val" id="hours-val">2 hours</div>
+  </div>
+  <div class="ctrl">
+    <label>Overlay opacity</label>
+    <div class="opacity-row">
+      <input type="range" id="opacity" min="0" max="100" value="75" oninput="setOpacity(this.value)">
+      <span id="op-val">75%</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div style="font-size:10px;font-weight:600;color:#90a0c8;margin-bottom:3px">% DAYS WITH CALM WINDOW</div>
+    <div class="legend-bar"></div>
+    <div class="legend-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+  </div>
+
+  <div class="note" id="t-activity"></div>
+
+  <a href="methodology.html" target="_blank" style="display:block;margin-top:12px;padding:8px 12px;background:#3656c6;color:#fff;border-radius:6px;text-align:center;text-decoration:none;font-size:12px;font-weight:600">How does this map work? →</a>
+
+  <div class="note">
+    Tiles: ERA5 hourly 100&nbsp;m winds → Weibull/Markov calm fraction →
+    GWA-calibrated 250&nbsp;m → USGS 3DEP 10&nbsp;m terrain refinement.
+    Same model as <a href="https://calm-winds-spain.netlify.app" style="color:#80a8ff">calm-winds-spain</a>.
+  </div>
+</aside>
+
+<script>
+const PARAMS = new URLSearchParams(location.search);
+const SLUG = PARAMS.get('site') || 'spaceport-america';
+const MONTHS = ['Annual','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const THRESH = ['1_0','1_5','2_0','2_5','3_0'];
+const THRESH_LABELS = ['1.0','1.5','2.0','2.5','3.0'];
+
+const map = L.map('map', {
+  center: [33, -106], zoom: 9, minZoom: 7, maxZoom: 15
+});
+
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Imagery &copy; Esri', maxZoom: 19
+}).addTo(map);
+
+let SITE = null;
+let calmLayer = null;
+
+function periodKey() {
+  const m = +document.getElementById('month').value;
+  return m === 0 ? 'annual' : 'm' + String(m).padStart(2, '0');
+}
+function thresholdKey() {
+  const t = +document.getElementById('threshold').value;
+  return THRESH[t];
+}
+function hoursKey() {
+  return +document.getElementById('hours').value;
+}
+
+function updateLayer() {
+  const t = +document.getElementById('threshold').value;
+  const m = +document.getElementById('month').value;
+  const h = +document.getElementById('hours').value;
+  document.getElementById('thresh-val').textContent = THRESH_LABELS[t] + ' m/s';
+  document.getElementById('month-val').textContent = MONTHS[m];
+  document.getElementById('hours-val').textContent = h + (h === 1 ? ' hour' : ' hours');
+
+  if (calmLayer) map.removeLayer(calmLayer);
+  if (!SITE) return;
+  const url = `tiles/${SLUG}/${periodKey()}/t${thresholdKey()}_h${hoursKey()}/{z}/{x}/{y}.png`;
+  calmLayer = L.tileLayer(url, {
+    opacity: +document.getElementById('opacity').value / 100,
+    minZoom: 6, maxZoom: 15, errorTileUrl: 'data:image/png;base64,iVBORw0KGgo='
+  });
+  calmLayer.addTo(map);
+
+  // Reflect state in URL so links are shareable
+  const u = new URL(location);
+  u.searchParams.set('m', m);
+  u.searchParams.set('t', t);
+  u.searchParams.set('h', h);
+  history.replaceState(null, '', u.toString());
+}
+
+function setOpacity(v) {
+  document.getElementById('op-val').textContent = v + '%';
+  if (calmLayer) calmLayer.setOpacity(v / 100);
+}
+
+async function load() {
+  const meta = await (await fetch('data/sites.json')).json();
+  SITE = meta.sites.find(s => s.slug === SLUG);
+  if (!SITE) {
+    document.getElementById('t-name').textContent = `Unknown site: ${SLUG}`;
+    return;
+  }
+  document.getElementById('t-name').textContent = SITE.name;
+  document.getElementById('t-meta').innerHTML =
+    `${SITE.state} · ${SITE.lat.toFixed(4)}°, ${SITE.lon.toFixed(4)}°<br>` +
+    `<code>${SITE.license.number}</code> &middot; since ${SITE.license.issued || '—'}`;
+  document.getElementById('t-activity').textContent = SITE.activity;
+  // Restore slider state from URL
+  if (PARAMS.has('m')) document.getElementById('month').value = PARAMS.get('m');
+  if (PARAMS.has('t')) document.getElementById('threshold').value = PARAMS.get('t');
+  if (PARAMS.has('h')) document.getElementById('hours').value = PARAMS.get('h');
+
+  // Centre map on the site, with a 1.5°×1.5° pad
+  map.setView([SITE.lat, SITE.lon], 10);
+  map.setMaxBounds([[SITE.lat - 1.2, SITE.lon - 1.2], [SITE.lat + 1.2, SITE.lon + 1.2]]);
+  // Marker for the site
+  L.circleMarker([SITE.lat, SITE.lon], {
+    radius: 7, color: '#fff', weight: 2, fillColor: '#22c97a', fillOpacity: 0.9
+  }).bindTooltip(SITE.name, {permanent: false}).addTo(map);
+
+  updateLayer();
+}
+
+load();
+</script>
+</body>
+</html>

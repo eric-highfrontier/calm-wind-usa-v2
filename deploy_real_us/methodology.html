@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Methodology — US Spaceports Calm-Wind Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0b1220;color:#cfd8ee;
+  font-size:15px;line-height:1.6;max-width:780px;margin:0 auto;padding:36px 24px 80px}
+h1{font-size:28px;margin-bottom:6px}
+h2{font-size:19px;margin-top:32px;margin-bottom:8px;color:#e6e9f2;border-bottom:1px solid #233056;padding-bottom:5px}
+h3{font-size:15px;margin-top:18px;margin-bottom:4px;color:#9fb1de}
+p{margin:8px 0}
+code,pre{font-family:"SF Mono",Menlo,monospace;font-size:13px;background:#152043;border-radius:4px;padding:1px 5px;color:#a8c0ff}
+pre{padding:10px 14px;margin:10px 0;overflow-x:auto;border:1px solid #2a3a6e}
+ul,ol{margin:6px 0 6px 20px}
+li{margin:3px 0}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}
+th,td{border:1px solid #2a3a6e;padding:6px 9px;text-align:left}
+th{background:#152043;color:#9fb1de;font-weight:600}
+.note{font-size:12px;color:#90a0c8;font-style:italic;margin:10px 0}
+a{color:#80a8ff}
+.back{display:inline-block;margin-bottom:20px;padding:5px 11px;background:#243152;border-radius:5px;color:#cfd8ee;text-decoration:none;font-size:12px}
+.back:hover{background:#2f3e6c}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← Map</a>
+
+<h1>How this map works</h1>
+<p>This site shows the percentage of days containing a calm-wind window of <em>H</em> consecutive hours below threshold <em>T</em> at 100&nbsp;m above ground for each of the U.S. licensed and federal spaceports. The model is the same Weibull + Markov pipeline used at <a href="https://calm-winds-spain.netlify.app">calm-winds-spain.netlify.app</a>.</p>
+
+<h2>Data sources</h2>
+<table>
+<tr><th>Layer</th><th>What</th><th>Where</th></tr>
+<tr><td>ERA5 hourly winds</td><td>100&nbsp;m u/v wind components, 0.25° / hourly, 2023</td><td>ECMWF / Copernicus C3S via the CDS API and the Google Public Datasets ARCO zarr</td></tr>
+<tr><td>Global Wind Atlas (GWA)</td><td>250&nbsp;m mean wind, Weibull A, Weibull k</td><td>globalwindatlas.info, USA country layers</td></tr>
+<tr><td>USGS 3DEP DEM</td><td>1/3 arc-second (≈10&nbsp;m) for CONUS, 2 arc-second (≈60&nbsp;m) for Alaska</td><td>S3 prd-tnm/StagedProducts/Elevation/13 and /2</td></tr>
+<tr><td>Spaceport coordinates and license dates</td><td>Operator, license number, type, issue date</td><td>FAA Office of Spaceports (faa.gov/space) cross-checked with each operator's site</td></tr>
+<tr><td>Site photos</td><td>Stitched satellite tiles (3×3 at z12-14)</td><td>Esri World Imagery</td></tr>
+</table>
+
+<h2>The 5-parameter calm-probability model</h2>
+<p>Per pixel (at 250&nbsp;m), we estimate the probability of a calm window using five parameters:</p>
+<ol>
+<li><b>mean</b> — annual mean wind speed (Weibull&nbsp;A scaled by Γ(1+1/k))</li>
+<li><b>k</b> — Weibull shape parameter</li>
+<li><b>diurnal_amp</b> — amplitude of the daily wind cycle</li>
+<li><b>diurnal_phase</b> — UTC hour at which wind is at its minimum</li>
+<li><b>autocorr</b> — lag-1 hour-to-hour persistence (Markov state-transition probability)</li>
+</ol>
+
+<p>Spatial parameters (<em>mean</em> and <em>k</em>) come from GWA at 250&nbsp;m. Temporal parameters (<em>diurnal_amp</em>, <em>diurnal_phase</em>, <em>autocorr</em>) are computed from the ERA5 hourly time series for the box centered on the spaceport — these vary slowly across a ±0.75° box, so a single time series captures them.</p>
+
+<h3>Calm probability at a single hour</h3>
+<p>Given the five parameters, the probability that wind at hour <em>h</em> is below threshold <em>T</em> is the Weibull CDF:</p>
+<pre>wind(h) = mean + diurnal_amp · cos(2π·(h − diurnal_phase)/24)
+c       = wind(h) / Γ(1 + 1/k)
+P(wind < T at hour h) = 1 − exp(−(T/c)<sup>k</sup>)</pre>
+
+<h3>Consecutive-hours adjustment</h3>
+<p>For <em>H</em> &gt; 1 we boost or dampen the single-hour probability by the lag-1 persistence:</p>
+<pre>persistence_factor = 1 + (autocorr − 0.5) · 0.6     (clamped to [0.5, 1.5])
+P(H consecutive hours) = P(1 hour) <sup>(H / persistence_factor)</sup></pre>
+<p>High-autocorrelation regimes (e.g. nocturnal stable boundary layers in deserts) make consecutive calm hours much more likely than the i.i.d. estimate; the formula corrects for this.</p>
+
+<h3>Daily aggregation</h3>
+<p>Finally, we average the per-hour calm probability over the 24 hours of the day, then exponentiate by H/persistence_factor. The result is interpreted as "% of days that contain at least one calm window of H consecutive hours below threshold T".</p>
+
+<h2>Layer hierarchy</h2>
+<ul>
+<li><b>Top map (z3–z7)</b>: a single CONUS+AK calm grid computed at 0.5° from ERA5 alone, no GWA refinement. Covers the full country at low resolution.</li>
+<li><b>Per-spaceport (z6–z14)</b>: GWA-refined 250&nbsp;m calm grids per site, with optional 10&nbsp;m DEM terrain refinement at z13+ (lee/windward shading via tanh of TPI deviation).</li>
+</ul>
+
+<h2>Colormap (GWA standard)</h2>
+<p>Calm % maps to the same 8-stop GWA color ramp as the Spanish version:</p>
+<table>
+<tr><th>Calm %</th><th>≈ wind speed</th><th>Color</th></tr>
+<tr><td>100% (calmest)</td><td>~0&nbsp;m/s</td><td>White</td></tr>
+<tr><td>~90%</td><td>~1&nbsp;m/s</td><td>Cyan</td></tr>
+<tr><td>~80%</td><td>~2.5&nbsp;m/s</td><td>Dark blue</td></tr>
+<tr><td>~60%</td><td>~3&nbsp;m/s</td><td>Green</td></tr>
+<tr><td>~50%</td><td>~5.5&nbsp;m/s</td><td>Yellow</td></tr>
+<tr><td>~30%</td><td>~7&nbsp;m/s</td><td>Orange</td></tr>
+<tr><td>~15%</td><td>~9&nbsp;m/s</td><td>Red</td></tr>
+<tr><td>0% (windiest)</td><td>~12&nbsp;m/s</td><td>Purple</td></tr>
+</table>
+
+<h2>Caveats</h2>
+<ul>
+<li><b>One year of ERA5 (2023)</b> drives the temporal parameters. Multi-year averages will follow as the per-site CDS downloads complete.</li>
+<li><b>Synoptic time series</b>: the temporal parameters (<em>amp</em>, <em>phase</em>, <em>autocorr</em>) use the box-mean ERA5 time series; sub-bbox spatial variation in those parameters is currently lost. The Spain pipeline computes them per ERA5 cell; we'll port that for Phase&nbsp;D.</li>
+<li><b>Downscaling vs simulation</b>: the model is a statistical downscale, not an LES. Expect 0–10 percentage-point local error vs anemometer measurements at any given pixel.</li>
+<li><b>Coastal sites</b>: at Cape Canaveral, MARS Wallops, Kodiak, Vandenberg, Boca Chica, the GWA mean wind is biased low over water by ~1&nbsp;m/s in some pixels (GWA's coastal mask is conservative). Treat over-water calm % cautiously.</li>
+</ul>
+
+<p class="note">Generated 2026-05-08 from <a href="https://github.com">/Volumes/X10 Pro/calm-wind-usa/</a> · contact: jose.mariano@zero2infinity.space</p>
+</body>
+</html>

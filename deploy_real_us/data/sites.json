@@ -1,0 +1,214 @@
+{
+  "_meta": {
+    "generated": "2026-05-08",
+    "source": "FAA Office of Spaceports list (faa.gov/space/spaceports_by_state) + per-site Wikipedia coordinate verification",
+    "bbox_half_deg": 0.75,
+    "license_categories": {
+      "commercial": "FAA Launch Site Operator License (LSO/LRSO) or Reentry Site Operator (RSO)",
+      "federal": "Federal range — DoD/NASA, no FAA spaceport license required",
+      "private": "Private exclusive-use; vehicle-specific FAA launch licenses, no spaceport operator license"
+    }
+  },
+  "sites": [
+    {
+      "slug": "pacific-spaceport-alaska",
+      "name": "Pacific Spaceport Complex – Alaska",
+      "state": "AK",
+      "category": "commercial",
+      "lat": 57.43528, "lon": -152.34000,
+      "license": {"number": "LSO 03-008", "type": "vertical", "issued": "2003-09-23"},
+      "operator": "Alaska Aerospace Corporation",
+      "activity": "Three vertical launch pads on Kodiak Island serving small-lift orbital and suborbital vehicles. Active commercial customers include ABL Space (RS1), Astra (formerly Rocket 3), and U.S. DoD missile-defense interceptors. Operations were suspended 2014–2016 after a Strategic Target System failure damaged Pad 1; the complex resumed launches in 2018 and has flown on average 2–4 missions per year since."
+    },
+    {
+      "slug": "mojave-air-space-port",
+      "name": "Mojave Air & Space Port",
+      "state": "CA",
+      "category": "commercial",
+      "lat": 35.05944, "lon": -118.15167,
+      "license": {"number": "LSO 04-009", "type": "horizontal", "issued": "2004-06-17"},
+      "operator": "East Kern Airport District",
+      "activity": "First U.S. facility licensed for horizontal launches of reusable spacecraft (2004). Tenants include Virgin Galactic flight ops, Scaled Composites, Stratolaunch (Roc carrier aircraft), Masten (now Astrobotic) and a long roster of suborbital and aircraft test programs. Mojave does not host vertical orbital launches; it is a high-desert flight-test and aerospace-MRO hub at 2,801 ft elevation."
+    },
+    {
+      "slug": "vandenberg-sfb",
+      "name": "Vandenberg Space Force Base",
+      "state": "CA",
+      "category": "federal",
+      "lat": 34.75133, "lon": -120.52023,
+      "license": {"number": "Federal", "type": "vertical+horizontal", "issued": "1958-10-04"},
+      "operator": "United States Space Force (Western Range)",
+      "activity": "Primary U.S. west-coast launch range for polar and sun-synchronous orbits. SpaceX flies Falcon 9 from SLC-4E (high-cadence Starlink, NRO, NASA payloads); ULA flies Vulcan from SLC-3E and Atlas V legacy missions; Firefly launches Alpha from SLC-2W. SLC-6 is being converted by SpaceX for west-coast Falcon Heavy from 2025–2026. The 99,000-acre coastal range also supports DoD missile testing."
+    },
+    {
+      "slug": "colorado-air-space-port",
+      "name": "Colorado Air & Space Port",
+      "state": "CO",
+      "category": "commercial",
+      "lat": 39.78528, "lon": -104.54306,
+      "license": {"number": "LSO 18-017", "type": "horizontal", "issued": "2018-08-13"},
+      "operator": "Adams County",
+      "activity": "Horizontal-takeoff spaceport east of Denver, certified for runway-launched suborbital and point-to-point vehicles. No orbital launches to date; current tenants are flight-test and engine-development programs. In 2025 Boom Technology took over the former Reaction Engines facility on-site to test supersonic propulsion. Otherwise the field functions as a busy general-aviation airport with the tallest GA control tower in the U.S."
+    },
+    {
+      "slug": "space-florida-lc46",
+      "name": "Space Florida Launch Complex 46",
+      "state": "FL",
+      "category": "commercial",
+      "lat": 28.45833, "lon": -80.52840,
+      "license": {"number": "LSO 10-014", "type": "vertical", "issued": "2010-09-29"},
+      "operator": "Space Florida",
+      "activity": "Small-lift vertical pad on Cape Canaveral SFS, leased by Space Florida from the U.S. Air Force/Navy and offered to commercial tenants. Hosted Astra Rocket 3 (LV0008, Feb 2022, partial failure), Athena/LM-100 (1990s), and Trident D5 development. Currently configured to support multiple small-vehicle providers including Phantom Space and Vaya Space."
+    },
+    {
+      "slug": "space-florida-launch-landing-facility",
+      "name": "Space Florida Launch & Landing Facility (former Shuttle Landing Facility)",
+      "state": "FL",
+      "category": "commercial",
+      "lat": 28.61500, "lon": -80.69400,
+      "license": {"number": "LRSO 18-018", "type": "horizontal+reentry", "issued": "2018-11-07"},
+      "operator": "Space Florida (30-year lease from NASA)",
+      "activity": "The 15,000 ft former shuttle runway on Merritt Island, now operated as a horizontal launch and orbital-reentry site. Sierra Space targets Dream Chaser landings here; Amazon Leo (formerly Project Kuiper) runs a $120 M satellite-processing facility on the apron. Over 3,200 flight ops and 340 landings supported in 2025."
+    },
+    {
+      "slug": "cecil-air-space-port",
+      "name": "Cecil Air & Space Port",
+      "state": "FL",
+      "category": "commercial",
+      "lat": 30.21861, "lon": -81.87667,
+      "license": {"number": "LSO 09-012", "type": "horizontal", "issued": "2010-01-11"},
+      "operator": "Jacksonville Aviation Authority",
+      "activity": "Horizontal-launch spaceport in Jacksonville with 12,503 ft runway, hosting flight-test, MRO, Florida Air National Guard, and U.S. Coast Guard ops. No orbital launches to date. In Sept 2024 ground broke on a hypersonic-aircraft test facility for transatlantic-class vehicles; that program plus general aviation and corporate flight ops dominate current activity."
+    },
+    {
+      "slug": "space-coast-regional",
+      "name": "Space Coast Regional Airport",
+      "state": "FL",
+      "category": "commercial",
+      "lat": 28.51480, "lon": -80.79920,
+      "license": {"number": "LSO 20-019", "type": "horizontal", "issued": "2020-05-05"},
+      "operator": "Titusville-Cocoa Airport Authority",
+      "activity": "Public regional airport in Titusville licensed for horizontal launches. No orbital launches to date; the field hosts Bristow Academy helicopter flight school (~350 pilots/year), the Valiant Air Command Warbird Museum, NASA/KSC personnel transport, and corporate aviation. Renewed by the FAA in 2025; license valid through 2030."
+    },
+    {
+      "slug": "cape-canaveral-sfs",
+      "name": "Cape Canaveral Space Force Station",
+      "state": "FL",
+      "category": "federal",
+      "lat": 28.48889, "lon": -80.57778,
+      "license": {"number": "Federal", "type": "vertical", "issued": "1949-05-11"},
+      "operator": "United States Space Force (Eastern Range)",
+      "activity": "America's busiest launch range. SpaceX flies Falcon 9 from SLC-40 (Starlink, Crew/Cargo Dragon, NASA, NRO) at >100 launches/year cadence; ULA flies Vulcan and Atlas V from SLC-41; Falcon Heavy uses LC-39A on adjacent KSC. Blue Origin is preparing LC-36 for New Glenn. Multiple booster-landing zones (LZ-1/2) on the cape itself."
+    },
+    {
+      "slug": "kennedy-space-center",
+      "name": "Kennedy Space Center (LC-39A/B)",
+      "state": "FL",
+      "category": "federal",
+      "lat": 28.58300, "lon": -80.65000,
+      "license": {"number": "Federal", "type": "vertical", "issued": "1962-07-01"},
+      "operator": "NASA",
+      "activity": "LC-39A is leased by SpaceX for Falcon 9 (Crew Dragon) and Falcon Heavy, plus East-Coast Starship (under construction). LC-39B hosts NASA's Space Launch System; Artemis II is planned for April 2026. The center includes the 525 ft Vehicle Assembly Building, two crawler-transporters, and the operational Mobile Launchers."
+    },
+    {
+      "slug": "spaceport-camden",
+      "name": "Spaceport Camden",
+      "state": "GA",
+      "category": "commercial",
+      "lat": 30.86400, "lon": -81.54700,
+      "license": {"number": "LSO 21-020", "type": "vertical", "issued": "2021-12-20"},
+      "operator": "Camden County",
+      "activity": "Vertical small-orbital launch site authorized for up to 12 launches, 12 static fires, and 12 wet-dress rehearsals per year, with azimuths 83–115° threading between Cumberland Island National Seashore and offshore. Site activity has been almost entirely legal/environmental since licensure; Camden County voters rejected the project's continued bond funding in March 2022 and FAA license remains active but unused. License expires Dec 20 2026."
+    },
+    {
+      "slug": "spaceport-america",
+      "name": "Spaceport America",
+      "state": "NM",
+      "category": "commercial",
+      "lat": 32.99028, "lon": -106.96972,
+      "license": {"number": "LSO 08-011", "type": "vertical+horizontal", "issued": "2008-12-15"},
+      "operator": "New Mexico Spaceport Authority",
+      "activity": "World's first purpose-built commercial spaceport. Anchor tenant Virgin Galactic flies VSS Unity/VMS Eve (suborbital) from the 12,000 ft runway. UP Aerospace flies SpaceLoft sounding rockets from the vertical area; SpinLaunch operates a kinetic-launch test mass driver on-site. Heavy 2024–2026 Virgin Galactic Delta-class vehicle ramp; FAA license valid through 2028."
+    },
+    {
+      "slug": "oklahoma-air-space-port",
+      "name": "Oklahoma Air & Space Port (Burns Flat)",
+      "state": "OK",
+      "category": "commercial",
+      "lat": 35.33972, "lon": -99.20056,
+      "license": {"number": "LSO 06-010", "type": "horizontal", "issued": "2006-06-12"},
+      "operator": "Oklahoma Space Industry Development Authority",
+      "activity": "Former Clinton-Sherman AFB; 13,500 ft runway, 5,000 sq mi of restricted airspace overhead. Licensed for horizontal launch but no orbital missions to date. Used as flight-test field for Burt Rutan Boomerang, USAF UAV testing, and X-Hab/atmospheric research. License renewed June 2021 and currently up for renewal in 2026."
+    },
+    {
+      "slug": "houston-spaceport",
+      "name": "Houston Spaceport (Ellington)",
+      "state": "TX",
+      "category": "commercial",
+      "lat": 29.60411, "lon": -95.17588,
+      "license": {"number": "LSO 15-016", "type": "horizontal", "issued": "2015-06-30"},
+      "operator": "Houston Airport System",
+      "activity": "400-acre commercial campus on Ellington Airport, the 10th licensed U.S. spaceport. Anchor tenants Axiom Space (orbital station modules), Intuitive Machines (Nova-C lunar landers, IM-1 success Feb 2024 and IM-2 in March 2025), and Collins Aerospace (Artemis xEMU spacesuits). Horizontal-launch authorization is currently theoretical; the site mainly functions as a manufacturing and mission-control hub."
+    },
+    {
+      "slug": "midland-air-space-port",
+      "name": "Midland International Air & Space Port",
+      "state": "TX",
+      "category": "commercial",
+      "lat": 31.94250, "lon": -102.20194,
+      "license": {"number": "LSO 14-015", "type": "horizontal", "issued": "2014-09-17"},
+      "operator": "City of Midland",
+      "activity": "Commercial airport with horizontal-launch licence. Anchor tenant XCOR Aerospace (Lynx) folded in 2017; the Midland Development Corp continues to court replacement spaceflight tenants but no orbital launches have flown. Delta restored daily Austin service in April 2024; Southwest dominates passenger ops alongside regional carriers."
+    },
+    {
+      "slug": "starbase",
+      "name": "SpaceX Starbase (Boca Chica)",
+      "state": "TX",
+      "category": "private",
+      "lat": 25.99139, "lon": -97.18361,
+      "license": {"number": "Per-vehicle (FAA Part 450)", "type": "vertical", "issued": "2014-07-09"},
+      "operator": "SpaceX",
+      "activity": "SpaceX's Starship/Super Heavy development and orbital test site; incorporated as a Texas city in May 2025. Two operational Orbital Launch Mounts (OLM-1, OLM-2) plus Massey's test-stand complex. Through May 2026, Integrated Flight Tests have stepped through tower-catch booster recovery and orbital reentry; current cadence is roughly one IFT per 8–12 weeks. Adjacent Roberts Road yard fabricates the rapid-iteration airframes."
+    },
+    {
+      "slug": "blue-origin-launch-site-one",
+      "name": "Blue Origin Launch Site One (Corn Ranch)",
+      "state": "TX",
+      "category": "private",
+      "lat": 31.42293, "lon": -104.75715,
+      "license": {"number": "Per-vehicle (FAA Part 450)", "type": "vertical (suborbital)", "issued": "2006-11-13"},
+      "operator": "Blue Origin",
+      "activity": "165,000-acre private spaceport 30 miles north of Van Horn. New Shepard suborbital tourism and research vehicle flies from this complex; cadence reached a monthly rhythm by NS-37/NS-38 in January 2026. Site also includes BE-3U, BE-4 and BE-7 engine test cells supporting the New Glenn and Blue Moon programs flown elsewhere."
+    },
+    {
+      "slug": "mid-atlantic-regional-spaceport",
+      "name": "Mid-Atlantic Regional Spaceport (MARS)",
+      "state": "VA",
+      "category": "commercial",
+      "lat": 37.84333, "lon": -75.47806,
+      "license": {"number": "LSO 02-007", "type": "vertical", "issued": "2002-12-18"},
+      "operator": "Virginia Spaceport Authority",
+      "activity": "Co-located with NASA Wallops on Virginia's Eastern Shore. Pad 0A, currently being upgraded for Antares 330/Eclipse, has flown Antares 230+/Cygnus ISS resupply (CRS-2) since 2019. Pad 0B supports Northrop Grumman Minotaur. Launch Complex 2 hosts Rocket Lab Electron (active since Jan 2023). Launch Complex 3 is being built for Rocket Lab's Neutron, first flight expected 2025–2026."
+    },
+    {
+      "slug": "wallops-flight-facility",
+      "name": "Wallops Flight Facility",
+      "state": "VA",
+      "category": "federal",
+      "lat": 37.93333, "lon": -75.46778,
+      "license": {"number": "Federal", "type": "vertical+horizontal", "issued": "1945-06-27"},
+      "operator": "NASA",
+      "activity": "NASA's principal sounding-rocket range, also the home of orbital ops at MARS (above). Wallops conducts ~20 sounding-rocket and target launches per year (Black Brant, Terrier-Improved Malemute) plus airborne science from its 8,750 ft runway. Mobile range assets deploy globally. Rocket Lab Neutron's purpose-built pad came online August 2025."
+    },
+    {
+      "slug": "huntsville-international",
+      "name": "Huntsville International Air & Space Port",
+      "state": "AL",
+      "category": "commercial",
+      "lat": 34.64069, "lon": -86.77531,
+      "license": {"number": "RSO 22-001", "type": "reentry (orbital)", "issued": "2022-05-13"},
+      "operator": "Huntsville-Madison County Airport Authority",
+      "activity": "First U.S. commercial airport licensed as a reentry site. License is specific to Sierra Space's Dream Chaser, which is intended to land on the 12,600 ft runway after ISS cargo missions; Tenacity's first flight slipped from 2024 into the late-2025/2026 window. The airport otherwise operates as a normal regional airport for Delta/American/United."
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>US Spaceports — Calm-Wind Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;background:#0b1220;color:#e6e9f2}
+#map{position:absolute;top:0;bottom:0;left:0;right:380px;background:#0b1220}
+#side{position:absolute;top:0;right:0;width:380px;bottom:0;background:#11192c;border-left:1px solid #233056;
+  overflow-y:auto;padding:18px 18px 36px;font-size:13px;line-height:1.45}
+#side h1{font-size:17px;font-weight:600;letter-spacing:.2px;margin-bottom:2px}
+#side .sub{font-size:11px;color:#90a0c8;margin-bottom:14px}
+#card{background:#152043;border:1px solid #2a3a6e;border-radius:8px;padding:0;overflow:hidden;margin-bottom:14px}
+#card .empty{padding:14px;color:#7a8bbb;font-style:italic;font-size:12px;text-align:center}
+#card img{display:block;width:100%;height:auto;border-bottom:1px solid #233056}
+#card .body{padding:13px 14px}
+#card h2{font-size:15px;font-weight:600;margin-bottom:2px}
+#card .meta{font-size:11px;color:#9fb1de;margin-bottom:8px}
+#card .lic{display:inline-block;font-family:"SF Mono",Menlo,monospace;font-size:10.5px;
+  background:#0d1633;border:1px solid #2a3a6e;border-radius:3px;padding:1px 6px;margin-right:5px;color:#a8c0ff}
+#card .activity{font-size:12px;color:#cfd8ee;margin-top:6px}
+#card .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;
+  font-weight:600;letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+.b-commercial{background:#1f5d3a;color:#9bf2c7}
+.b-federal   {background:#1d3a72;color:#9ec3ff}
+.b-private   {background:#7a4a18;color:#ffc78a}
+#zoomBtn{display:block;margin:10px 14px 14px;text-align:center;background:#3656c6;color:#fff;
+  border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;
+  cursor:pointer;text-decoration:none}
+#zoomBtn:hover{background:#4366d6}
+#zoomBtn.disabled{background:#243152;color:#7a8bbb;cursor:not-allowed}
+.legend{margin-top:8px;font-size:11px;color:#9fb1de}
+.legend .row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.legend .dot{width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+ul.list{list-style:none;margin-top:14px;border-top:1px solid #233056;padding-top:10px}
+ul.list li{padding:5px 4px;border-radius:5px;cursor:pointer;display:flex;justify-content:space-between;font-size:12px}
+ul.list li:hover{background:#1a2649}
+ul.list li .st{color:#7a8bbb;font-family:"SF Mono",Menlo,monospace;font-size:10.5px}
+.attrib{font-size:9px;color:#5e6f9c;margin-top:18px;line-height:1.5}
+.marker-pin{width:18px;height:18px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 0 0 2px rgba(0,0,0,.5);cursor:pointer}
+.m-commercial{background:#22c97a}
+.m-federal   {background:#3a7bff}
+.m-private   {background:#ff9b3a}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<aside id="side">
+  <h1>US Spaceports — Calm-Wind Map</h1>
+  <div class="sub">Click a marker for license info, current activity, and a high-resolution local wind analysis. Background overlay (coming next phase): annual ERA5 calm-wind percentage, t&lt;2 m/s for 2 consecutive hours.</div>
+
+  <div id="card">
+    <div class="empty">Select a spaceport on the map →</div>
+  </div>
+
+  <div class="legend">
+    <div class="row"><span class="dot m-commercial"></span> FAA Launch Site Operator (LSO) license</div>
+    <div class="row"><span class="dot m-federal"></span> Federal range — DoD / NASA</div>
+    <div class="row"><span class="dot m-private"></span> Private exclusive-use site</div>
+  </div>
+
+  <ul class="list" id="list"></ul>
+
+  <a href="methodology.html" target="_blank" style="display:block;margin-top:14px;padding:9px 12px;background:#3656c6;color:#fff;border-radius:6px;text-align:center;text-decoration:none;font-size:12px;font-weight:600">How does this map work? →</a>
+
+  <div class="attrib">
+    Imagery © Esri, Maxar, Earthstar Geographics, USGS · Map © OpenStreetMap contributors ·
+    Spaceport data: FAA Office of Spaceports (faa.gov/space) · Generated 2026-05-08 ·
+    Built by Zero 2 Infinity from the calm-winds-spain pipeline.
+  </div>
+</aside>
+
+<script>
+const SITES_URL = 'data/sites.json';
+const PHOTO = slug => `photos/${slug}.jpg`;
+
+const COLOR = {
+  commercial: '#22c97a',
+  federal:    '#3a7bff',
+  private:    '#ff9b3a'
+};
+
+const map = L.map('map', {
+  center: [39, -98],
+  zoom: 4,
+  minZoom: 3,
+  maxZoom: 16,
+  worldCopyJump: false,
+  zoomControl: true
+});
+
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Imagery &copy; Esri',
+  maxZoom: 19
+}).addTo(map);
+
+L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png', {
+  opacity: 0.5,
+  attribution: '&copy; Stamen Design / OpenStreetMap'
+}).addTo(map);
+
+// CONUS coarse calm overlay (annual t2.0 / h2). Tiles are 404-tolerant so this
+// silently degrades while the pyramid is being generated by Phase B.
+const conusOverlay = L.tileLayer('tiles/conus/annual/t2_0_h2/{z}/{x}/{y}.png', {
+  opacity: 0.55, minZoom: 3, maxZoom: 7,
+  errorTileUrl: 'data:image/png;base64,iVBORw0KGgo='
+}).addTo(map);
+
+let SITES = [];
+let SELECTED = null;
+const markers = {};
+
+function makeIcon(category) {
+  return L.divIcon({
+    html: `<div class="marker-pin m-${category}"></div>`,
+    className: 'marker-icon',
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00Z');
+  return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
+}
+
+function selectSite(slug) {
+  const s = SITES.find(x => x.slug === slug);
+  if (!s) return;
+  SELECTED = s;
+  const card = document.getElementById('card');
+  card.innerHTML = `
+    <img src="${PHOTO(s.slug)}" alt="${s.name}" loading="lazy">
+    <div class="body">
+      <span class="badge b-${s.category}">${s.category}</span>
+      <h2>${s.name}</h2>
+      <div class="meta">${s.state} · ${s.lat.toFixed(4)}°, ${s.lon.toFixed(4)}°</div>
+      <div>
+        <span class="lic">${s.license.number}</span>
+        <span class="lic">${s.license.type}</span>
+        <span class="lic">since ${fmtDate(s.license.issued)}</span>
+      </div>
+      <div class="activity"><strong>Operator:</strong> ${s.operator}</div>
+      ${SITE_STATS[s.slug] ? `<div class="activity" style="background:#0d1633;border:1px solid #2a3a6e;border-radius:5px;padding:6px 8px;margin-top:6px;font-size:11px"><strong>GWA mean wind:</strong> ${SITE_STATS[s.slug].mean_wind_mps_gwa ?? '—'} m/s${SITE_STATS[s.slug].default_calm_pct !== undefined ? ` &middot; <strong>calm @ site:</strong> ${SITE_STATS[s.slug].default_calm_pct}% (max ${SITE_STATS[s.slug].max_calm_pct}% in bbox)` : ''}</div>` : ''}
+      <div class="activity">${s.activity}</div>
+    </div>
+    ${TILES_AVAILABLE[s.slug]
+      ? `<a id="zoomBtn" href="site.html?site=${s.slug}">Open high-resolution wind map →</a>
+         <a id="zoomBtn" href="kmz/${s.slug}.kmz" download style="background:#243152;font-weight:500;font-size:11px;padding:6px 10px">Download KMZ for Google Earth</a>`
+      : `<a id="zoomBtn" class="disabled" title="Tile pyramid not yet rendered">Wind tiles — pending render</a>`}
+  `;
+  map.flyTo([s.lat, s.lon], 9, {duration: 0.8});
+}
+
+let TILES_AVAILABLE = {};
+let SITE_STATS = {};
+async function load() {
+  const [meta, idx, stats] = await Promise.all([
+    fetch(SITES_URL).then(r => r.json()),
+    fetch('data/tiles_index.json').then(r => r.ok ? r.json() : {slugs:{}}).catch(() => ({slugs:{}})),
+    fetch('data/site_stats.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+  ]);
+  SITES = meta.sites;
+  TILES_AVAILABLE = idx.slugs || {};
+  SITE_STATS = stats || {};
+  for (const s of SITES) {
+    const m = L.marker([s.lat, s.lon], {icon: makeIcon(s.category), title: s.name});
+    m.on('click', () => selectSite(s.slug));
+    m.addTo(map);
+    markers[s.slug] = m;
+  }
+  // sidebar list grouped by category
+  const list = document.getElementById('list');
+  const cats = ['commercial', 'federal', 'private'];
+  for (const cat of cats) {
+    const sub = SITES.filter(s => s.category === cat).sort((a, b) => a.name.localeCompare(b.name));
+    for (const s of sub) {
+      const li = document.createElement('li');
+      li.innerHTML = `<span><span class="dot m-${cat}" style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid #fff;background:${COLOR[cat]};margin-right:6px;vertical-align:middle"></span>${s.name}</span><span class="st">${s.state}</span>`;
+      li.onclick = () => selectSite(s.slug);
+      list.appendChild(li);
+    }
+  }
+}
+
+load();
+</script>
+</body>
+</html>

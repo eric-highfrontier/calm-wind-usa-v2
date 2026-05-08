@@ -1,0 +1,85 @@
+{
+  "slugs": {
+    "pacific-spaceport-alaska": {
+      "combos": 195,
+      "tiles": 7410
+    },
+    "mojave-air-space-port": {
+      "combos": 195,
+      "tiles": 10530
+    },
+    "vandenberg-sfb": {
+      "combos": 195,
+      "tiles": 11115
+    },
+    "colorado-air-space-port": {
+      "combos": 195,
+      "tiles": 10335
+    },
+    "space-florida-lc46": {
+      "combos": 195,
+      "tiles": 8580
+    },
+    "space-florida-launch-landing-facility": {
+      "combos": 195,
+      "tiles": 8580
+    },
+    "cecil-air-space-port": {
+      "combos": 195,
+      "tiles": 11310
+    },
+    "space-coast-regional": {
+      "combos": 195,
+      "tiles": 8580
+    },
+    "cape-canaveral-sfs": {
+      "combos": 195,
+      "tiles": 8580
+    },
+    "kennedy-space-center": {
+      "combos": 195,
+      "tiles": 8580
+    },
+    "spaceport-camden": {
+      "combos": 195,
+      "tiles": 11310
+    },
+    "spaceport-america": {
+      "combos": 195,
+      "tiles": 31793
+    },
+    "oklahoma-air-space-port": {
+      "combos": 195,
+      "tiles": 10140
+    },
+    "houston-spaceport": {
+      "combos": 195,
+      "tiles": 9750
+    },
+    "midland-air-space-port": {
+      "combos": 195,
+      "tiles": 9360
+    },
+    "starbase": {
+      "combos": 195,
+      "tiles": 4680
+    },
+    "blue-origin-launch-site-one": {
+      "combos": 195,
+      "tiles": 12090
+    },
+    "mid-atlantic-regional-spaceport": {
+      "combos": 195,
+      "tiles": 10335
+    },
+    "wallops-flight-facility": {
+      "combos": 195,
+      "tiles": 8775
+    },
+    "huntsville-international": {
+      "combos": 195,
+      "tiles": 9165
+    }
+  },
+  "conus_overlay": true
+}
