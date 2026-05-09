@@ -53,7 +53,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0b1220;
   </div>
   <div class="ctrl">
     <label>Wind threshold</label>
-    <input type="range" id="threshold" min="0" max="4" value="2" step="1" oninput="updateLayer()">
+    <input type="range" id="threshold" min="0" max="8" value="2" step="1" oninput="updateLayer()">
     <div class="val" id="thresh-val">2.0 m/s</div>
   </div>
   <div class="ctrl">
@@ -90,8 +90,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0b1220;
 const PARAMS = new URLSearchParams(location.search);
 const SLUG = PARAMS.get('site') || 'spaceport-america';
 const MONTHS = ['Annual','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const THRESH = ['1_0','1_5','2_0','2_5','3_0'];
-const THRESH_LABELS = ['1.0','1.5','2.0','2.5','3.0'];
+const THRESH = ['1_0','1_5','2_0','2_5','3_0','3_5','4_0','4_5','5_0'];
+const THRESH_LABELS = ['1.0','1.5','2.0','2.5','3.0','3.5','4.0','4.5','5.0'];
 
 const map = L.map('map', {
   center: [33, -106], zoom: 9, minZoom: 7, maxZoom: 15
