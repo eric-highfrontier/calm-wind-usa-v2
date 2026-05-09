@@ -16,7 +16,7 @@ _sys.path.insert(0, str(Path(__file__).resolve().parent))
 from render_tiles import colorize, tile_bounds, lonlat_to_tile  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-THRESHOLDS = ["1_0", "1_5", "2_0", "2_5", "3_0"]
+THRESHOLDS = ["1_0", "1_5", "2_0", "2_5", "3_0", "3_5", "4_0", "4_5", "5_0"]
 HOURS = [1, 2, 3]
 PERIODS = ["annual"] + [f"m{m:02d}" for m in range(1, 13)]
 
